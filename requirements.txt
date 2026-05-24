@@ -1,9 +1,3 @@
 flask>=3.0,<4
 python-dotenv>=1.0,<2
 requests>=2.31,<3
-
-# bot (PROJECT_TYPE=bot)
-python-telegram-bot>=21,<23
-
-# rag (PROJECT_TYPE=rag)
-openai>=1.40,<2

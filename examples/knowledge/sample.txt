@@ -1,2 +1,0 @@
-Це приклад файлу знань для RAG.
-Скопіюйте в student/knowledge/ (наприклад: cp examples/knowledge/sample.txt student/knowledge/).

@@ -1,6 +1,3 @@
-# Папка student/ — робоча зона студента. При злитті оновлень шаблону (upstream)
-# завжди зберігається версія з поточної гілки студента (ours), без конфліктів.
-student/** merge=ours
-
-# Позначка для GitHub: не враховувати student/ у статистиці мов шаблону
-student/** linguist-generated
+# Код студентів не перезаписується при merge з шаблоном
+students/** merge=ours
+students/** linguist-generated
