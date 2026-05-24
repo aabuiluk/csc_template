@@ -14,6 +14,8 @@ Fork → додайте `.py` у **`students/`** → push → оновлення
 
 Підпапки підтримуються: `students/lab1/app.py` теж підхопиться.
 
+**API-ключі** (погода, валюти, OpenAI, …): [docs/TOKENS.md](docs/TOKENS.md) — `from config import get_token`.
+
 ## Старт
 
 1. [SETUP.md](SETUP.md) — PythonAnywhere + webhook  

@@ -23,9 +23,17 @@ sys.path.insert(0, "/home/ВАШ_ЛОГІН/csc_template")
 from wsgi import application
 ```
 
-## 3. Змінні (Web → Environment variables)
+## 3. Змінні середовища
 
-З [.env.example](.env.example): `REPO_PATH`, `GITHUB_WEBHOOK_SECRET`, `PA_WSGI_FILE`.
+**Деплой** (Web → Environment variables) — з [.env.example](.env.example):
+
+`REPO_PATH`, `GITHUB_WEBHOOK_SECRET`, `PA_WSGI_FILE`
+
+**Ваші API** (погода, валюти, Telegram, …) — ті самі ключі, що в [students/.env.example](students/.env.example), наприклад:
+
+`WEATHER_API_KEY`, `EXCHANGE_RATE_API_KEY`, `OPENAI_API_KEY`
+
+Локально: `cp students/.env.example students/.env` і заповніть. Деталі: [docs/TOKENS.md](docs/TOKENS.md).
 
 ## 4. GitHub webhook
 
@@ -38,10 +46,17 @@ from wsgi import application
 Додайте файли в `students/`, наприклад `students/app.py`:
 
 ```python
+from config import get_token
+
 def register(app):
     @app.route("/me")
     def me():
         return "Мій проєкт"
+
+    @app.route("/weather")
+    def weather():
+        key = get_token("WEATHER_API_KEY")
+        ...
 ```
 
 `git push` → сайт перезавантажиться з новим кодом.

@@ -150,6 +150,10 @@ activemq-data/
 # Environments
 .env
 .envrc
+students/.env
+students/.env.local
+students/.env.*
+!students/.env.example
 .venv
 env/
 venv/
