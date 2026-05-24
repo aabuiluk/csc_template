@@ -1,4 +1,16 @@
-# PythonAnywhere — швидке налаштування
+# PythonAnywhere — налаштування
+
+## Швидко: GUI-майстер (рекомендовано)
+
+На **своєму комп’ютері** (не на PA):
+
+```bash
+python tools/pa_setup_gui.py
+```
+
+Заповніть поля → **Згенерувати** → скопіюйте блок **«1. Bash»** у консоль PythonAnywhere. Блоки 2–3 — у Web tab і GitHub.
+
+---
 
 ## 1. Fork і clone на PA
 
@@ -6,16 +18,31 @@
 git clone https://github.com/ВАШ_ЛОГІН/csc_template.git ~/csc_template
 cd ~/csc_template
 git config merge.ours.driver true
-mkvirtualenv --python=python3.10 csc-venv
+
+mkdir -p ~/.virtualenvs
+python3.10 -m venv ~/.virtualenvs/csc-venv
+source ~/.virtualenvs/csc-venv/bin/activate
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## 2. Web app
+> `mkvirtualenv` на PA часто **не працює** — використовуйте `python3.10 -m venv`.
 
-- **Manual configuration**, Python 3.10  
-- Source: `/home/ВАШ_ЛОГІН/csc_template`  
-- Virtualenv: `/home/ВАШ_ЛОГІН/.virtualenvs/csc-venv`  
-- WSGI:
+Або: `bash scripts/bootstrap_pythonanywhere.sh` (після `export GITHUB_REPO=...`).
+
+---
+
+## 2. Web app — усі поля обов’язкові
+
+**Web** → **Add a new web app** → **Manual configuration** → Python **3.10**.
+
+| Поле | Значення |
+|------|----------|
+| **Source code** | `/home/ВАШ_ЛОГІН/csc_template` |
+| **Working directory** | `/home/ВАШ_ЛОГІН/csc_template` |
+| **Virtualenv** | `/home/ВАШ_ЛОГІН/.virtualenvs/csc-venv` (повний шлях) |
+
+**WSGI configuration file** — замініть вміст:
 
 ```python
 import sys
@@ -23,27 +50,36 @@ sys.path.insert(0, "/home/ВАШ_ЛОГІН/csc_template")
 from wsgi import application
 ```
 
+Натисніть зелену кнопку **Reload** після будь-яких змін.
+
+Перевірка: https://ВАШ_ЛОГІН.pythonanywhere.com/health
+
+---
+
 ## 3. Змінні середовища
 
-**Деплой** (Web → Environment variables) — з [.env.example](.env.example):
+**Web** → ваш сайт → **Environment variables**:
 
-`REPO_PATH`, `GITHUB_WEBHOOK_SECRET`, `PA_WSGI_FILE`
+- Деплой: `REPO_PATH`, `GITHUB_WEBHOOK_SECRET`, `PA_WSGI_FILE`, `PA_USERNAME`, `PA_DOMAIN`
+- Ваші API: `TELEGRAM_BOT_TOKEN`, `WEATHER_API_KEY`, … — [docs/TOKENS.md](docs/TOKENS.md)
 
-**Ваші API** (погода, валюти, Telegram, …) — ті самі ключі, що в [students/.env.example](students/.env.example), наприклад:
+`PA_WSGI_FILE` = `/var/www/вашлогін_pythonanywhere_com_wsgi.py` (шлях з Web → WSGI file).
 
-`WEATHER_API_KEY`, `EXCHANGE_RATE_API_KEY`, `OPENAI_API_KEY`
+**Reload** після зміни змінних.
 
-Локально: `cp students/.env.example students/.env` і заповніть. Деталі: [docs/TOKENS.md](docs/TOKENS.md).
+---
 
 ## 4. GitHub webhook
 
-- URL: `https://ВАШ_ЛОГІН.pythonanywhere.com/deploy-webhook`  
-- Secret = `GITHUB_WEBHOOK_SECRET`  
-- Подія: push  
+| Поле | Значення |
+|------|----------|
+| Payload URL | `https://ВАШ_ЛОГІН.pythonanywhere.com/deploy-webhook` |
+| Secret | = `GITHUB_WEBHOOK_SECRET` |
+| Events | push |
 
-## 5. Ваш код
+---
 
-Додайте файли в `students/`, наприклад `students/app.py`:
+## 5. Код у `students/`
 
 ```python
 from config import get_token
@@ -52,23 +88,23 @@ def register(app):
     @app.route("/me")
     def me():
         return "Мій проєкт"
-
-    @app.route("/weather")
-    def weather():
-        key = get_token("WEATHER_API_KEY")
-        ...
 ```
 
-`git push` → сайт перезавантажиться з новим кодом.
+`git push` → сайт оновиться.
 
-## Telegram / фонові задачі
+---
 
-Always-on (платний план): команда
+## Telegram-бот
+
+- **Немає** «allowlist» в Account/Web — `api.telegram.org` уже в [глобальному списку PA](https://www.pythonanywhere.com/whitelist/).
+- На free tier потрібен **проксі PA** для `requests` — див. [docs/TELEGRAM_PA.md](docs/TELEGRAM_PA.md).
+- Приклад: `students/_example_bot.py` → скопіювати як `students/bot.py`.
+- **Always-on** (платний план):
 
 ```bash
 /home/ВАШ_ЛОГІН/.virtualenvs/csc-venv/bin/python /home/ВАШ_ЛОГІН/csc_template/run_students.py
 ```
 
-У `students/bot.py` — функція `main()` з `python-telegram-bot` (додайте в свій `requirements.txt` у форку).
+Токен `TELEGRAM_BOT_TOKEN` — також у **Environment** Always-on задачі.
 
-Після deploy можна перезапускати задачу через `PA_ALWAYS_ON_TASK_ID` + API token.
+`python-telegram-bot` у шаблоні **не входить** у `requirements.txt` — лише `requests` (як у прикладі).

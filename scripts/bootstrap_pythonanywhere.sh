@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Одноразове налаштування на PythonAnywhere (Bash console).
-# Перед запуском: замініть GITHUB_REPO на URL форку студента.
+# Краще: python tools/pa_setup_gui.py на ПК → вставити згенерований блок сюди.
 
 set -euo pipefail
 
@@ -13,36 +13,38 @@ if [[ ! -d "$PROJECT_DIR/.git" ]]; then
   git clone "$GITHUB_REPO" "$PROJECT_DIR"
 else
   echo "Already cloned: $PROJECT_DIR"
+  cd "$PROJECT_DIR" && git pull
 fi
 
 cd "$PROJECT_DIR"
+git config merge.ours.driver true
 
-echo "==> Virtualenv"
+echo "==> Virtualenv (python3.10 -m venv; mkvirtualenv часто недоступний)"
+mkdir -p ~/.virtualenvs
 if [[ ! -d "$VENV_DIR" ]]; then
-  mkvirtualenv --python=python3.10 csc-venv
+  python3.10 -m venv "$VENV_DIR"
 fi
 # shellcheck disable=SC1091
 source "$VENV_DIR/bin/activate"
+pip install --upgrade pip
 pip install -r requirements.txt
 
-echo "==> post-merge hook (reload after manual git pull)"
+echo "==> post-merge hook"
 HOOK="$PROJECT_DIR/.git/hooks/post-merge"
-cat > "$HOOK" <<'HOOK_EOF'
+cat > "$HOOK" <<HOOK_EOF
 #!/bin/sh
-# Reload web app when you git pull in console
-touch "${PA_WSGI_FILE:-/var/www/__REPLACE_ME___wsgi.py}" 2>/dev/null || true
+touch "\${PA_WSGI_FILE:-/var/www/__REPLACE_USERNAME___pythonanywhere_com_wsgi.py}" 2>/dev/null || true
 HOOK_EOF
 chmod +x "$HOOK"
 
 echo ""
-echo "Далі вручну (Web tab → Add a new web app):"
-echo "  1. Manual configuration, Python 3.10"
-echo "  2. Source code: $PROJECT_DIR"
-echo "  3. Virtualenv: $VENV_DIR"
-echo "  4. WSGI file: $PROJECT_DIR/wsgi.py  (або вкажіть application у стандартному wsgi)"
-echo "  5. Account → API token → скопіюйте в .env / Environment variables"
-echo "  6. Web → Environment variables (див. .env.example)"
-echo "  7. GitHub → Settings → Webhooks → URL:"
-echo "       https://YOURUSER.pythonanywhere.com/deploy-webhook"
-echo "     Secret = GITHUB_WEBHOOK_SECRET"
+echo "Далі (Web tab — заповніть УСІ поля, потім Reload):"
+echo "  Source code:      $PROJECT_DIR"
+echo "  Working directory: $PROJECT_DIR"
+echo "  Virtualenv:       $VENV_DIR"
+echo "  WSGI: import sys; sys.path.insert(0, '$PROJECT_DIR'); from wsgi import application"
+echo ""
+echo "GitHub webhook: https://YOURUSER.pythonanywhere.com/deploy-webhook"
+echo "Telegram: docs/TELEGRAM_PA.md (без allowlist в Account — його немає)"
+echo "GUI майстер: python tools/pa_setup_gui.py"
 echo ""

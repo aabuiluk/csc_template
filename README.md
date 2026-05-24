@@ -1,26 +1,27 @@
 # csc_template
 
-Fork → додайте `.py` у **`students/`** → push → оновлення на [PythonAnywhere](https://www.pythonanywhere.com).
-
-## Як працює `students/`
-
-| Що в файлі | Коли виконується |
-|------------|------------------|
-| Код на верхньому рівні | При reload сайту (імпорт файлу) |
-| `def register(app):` | Підключення маршрутів Flask |
-| `def main():` | Always-on: `python run_students.py` |
-
-Файли з іменем `_*.py` **не** запускаються (приклад: `_example_web.py`).
-
-Підпапки підтримуються: `students/lab1/app.py` теж підхопиться.
-
-**API-ключі** (погода, валюти, OpenAI, …): [docs/TOKENS.md](docs/TOKENS.md) — `from config import get_token`.
+Fork → `.py` у **`students/`** → push → [PythonAnywhere](https://www.pythonanywhere.com).
 
 ## Старт
 
-1. [SETUP.md](SETUP.md) — PythonAnywhere + webhook  
-2. Локально: `pip install -r requirements.txt` → `python run_local.py`
+| Крок | Дія |
+|------|-----|
+| 1 | **Fork** на GitHub |
+| 2 | **`python tools/pa_setup_gui.py`** — згенерувати команди для консолі PA |
+| 3 | [SETUP.md](SETUP.md) — Web, webhook, токени |
+| 4 | Код у `students/` |
+
+## `students/`
+
+| У файлі | Ефект |
+|---------|--------|
+| Код на верхньому рівні | Імпорт при reload сайту |
+| `def register(app):` | Маршрути Flask |
+| `def main():` | Always-on: `run_students.py` |
+| `_*.py` | Не запускаються (приклади) |
+
+**Токени:** [docs/TOKENS.md](docs/TOKENS.md) · **Telegram на PA:** [docs/TELEGRAM_PA.md](docs/TELEGRAM_PA.md)
 
 ## Оновлення шаблону курсу
 
-[docs/SYNC_TEMPLATE.md](docs/SYNC_TEMPLATE.md) — папка `students/` не перезапишеться.
+[docs/SYNC_TEMPLATE.md](docs/SYNC_TEMPLATE.md)

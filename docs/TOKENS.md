@@ -8,7 +8,7 @@
 |-------------|-------------|
 | Локально | `students/.env` (зразок: [students/.env.example](../students/.env.example)) |
 | PythonAnywhere, сайт | **Web** → ваш додаток → **Environment variables** |
-| PythonAnywhere, бот | **Tasks** → **Always-on** → **Environment variables** (ті самі ключі) |
+| PythonAnywhere, бот | **Tasks** → **Always-on** → **Environment variables** (ті самі ключі; див. [TELEGRAM_PA.md](TELEGRAM_PA.md)) |
 
 Після зміни змінних на PA натисніть **Reload** (сайт) або перезапустіть Always-on.
 
